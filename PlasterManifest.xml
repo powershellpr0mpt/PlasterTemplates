@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<plasterManifest
+  schemaVersion="1.1"
+  templateType="Project" xmlns="http://www.microsoft.com/schemas/PowerShell/Plaster/v1">
+  <metadata>
+    <name>PSP-Modules</name>
+    <id>bf150cfc-090d-436b-9016-813ff6b3a2c0</id>
+    <version>0.1.0</version>
+    <title>PSP-Modules</title>
+    <description>Default PSP Module framework</description>
+    <author>Robert Prust</author>
+    <tags>Module, Build, Publish</tags>
+  </metadata>
+<parameters>
+    <parameter name="FullName" type="text" prompt="Module author's name" default="Robert Prust" />
+    <parameter name="ModuleName" type="text" prompt="Name of your module" />
+    <parameter name="ModuleDesc" type="text" prompt="Brief description on this module" />
+    <parameter name="Version" type="text" prompt="Initial module version" default="0.1.0" />
+    <parameter name="GitHubUserName" type="text" prompt="GitHub username" default="${PLASTER_PARAM_FullName}"/>
+    <parameter name="GitHubRepo" type="text" prompt="Github repo name for this module" default="${PLASTER_PARAM_ModuleName}"/>
+</parameters>  <content>
+    <message>      Creating folder structure    </message>
+    <file source='' destination='tests'/>
+    <file source='' destination='${PLASTER_PARAM_ModuleName}\public'/>
+    <file source='' destination='${PLASTER_PARAM_ModuleName}\private'/>
+    <message>      Deploying common files    </message>
+    <file source='.gitignore' destination='' />
+    <file source='build.ps1' destination=''/>
+    <file source='psake.ps1' destination=''/>
+    <file source='tests\UnitTests.Tests.ps1' destination=''/>
+    <message>       Deploying template files    </message>
+    <templateFile source='CHANGELOG.md' destination=''/>
+    <templateFile source='CONTRIBUTION.md' destination=''/>
+    <templateFile source='LICENSE.md' destination=''/>
+    <templateFile source='README.md' destination=''/>
+    <templateFile source='ModuleName\ModuleName.psm1' destination='${PLASTER_PARAM_ModuleName}\${PLASTER_PARAM_ModuleName}.psm1'/>
+    <message>       Creating PowerShell Module manifest    </message>
+    <newModuleManifest
+      destination='${PLASTER_PARAM_ModuleName}\${PLASTER_PARAM_ModuleName}.psd1'
+      moduleVersion='$PLASTER_PARAM_Version'
+      rootModule='${PLASTER_PARAM_ModuleName}.psm1'
+      author='$PLASTER_PARAM_FullName'
+      description='$PLASTER_PARAM_ModuleDesc'
+      encoding='UTF8-NoBOM'/>
+
+  </content>
+</plasterManifest>
