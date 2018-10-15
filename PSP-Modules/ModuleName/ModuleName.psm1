@@ -20,8 +20,8 @@ Write-Verbose $PSScriptRoot
 
 Write-Verbose 'Import Private Functions'
 
-if (Test-Path "$PSScriptRoot\Functions\Private") {
-    $FunctionList = Get-ChildItem -Path "$PSScriptRoot\Functions\Private";
+if (Test-Path "$PSScriptRoot\Private") {
+    $FunctionList = Get-ChildItem -Path "$PSScriptRoot\Private";
 
     foreach ($File in $FunctionList) {
         . $File.FullName;
@@ -31,8 +31,8 @@ if (Test-Path "$PSScriptRoot\Functions\Private") {
 
 Write-Verbose 'Import Public Functions'
 
-if (Test-Path "$PSScriptRoot\Functions\Public") {
-    $FunctionList = Get-ChildItem -Path "$PSScriptRoot\Functions\Public";
+if (Test-Path "$PSScriptRoot\Public") {
+    $FunctionList = Get-ChildItem -Path "$PSScriptRoot\Public";
 
     foreach ($File in $FunctionList) {
         . $File.FullName;
