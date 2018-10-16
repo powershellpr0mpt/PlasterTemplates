@@ -33,6 +33,7 @@
     <templateFile source='CONTRIBUTION.md' destination=''/>
     <templateFile source='LICENSE.md' destination=''/>
     <templateFile source='README.md' destination=''/>
+    <templateFile source='currentuser.psdeploy.ps1' destination=''/>
     <templateFile source='ModuleName\ModuleName.psm1' destination='${PLASTER_PARAM_ModuleName}\${PLASTER_PARAM_ModuleName}.psm1'/>
     <message>       Creating PowerShell Module manifest    </message>
     <newModuleManifest
