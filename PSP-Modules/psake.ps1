@@ -42,17 +42,12 @@ Task Build {
         Remove-Item -Path $ZipFolder/* -Recurse -Force
     }
 
+    Write-Host "Update the PSD1 FunctionsToExport for autoloading"  -ForegroundColor Blue
+    Set-ModuleFunctions
 
     Write-Host "Copying Module Manifest"  -ForegroundColor Blue
     $Null = Copy-Item   -Path "$ProjectRoot\$ModuleName\$ModuleName.psd1" -Destination "$VersionFolder\$ModuleName.psd1" -Force
-    Write-Host "Creating and compiling Module file"  -ForegroundColor Blue
-    $Null = New-Item    -Path "$VersionFolder\$ModuleName.psm1" -Type File -Force
-    $Null = Add-Content -Path "$VersionFolder\$ModuleName.psm1" -Value $FunctionsPublic, "`r`n"
-    $Null = Add-Content -Path "$VersionFolder\$ModuleName.psm1" -Value "#------------------===Private Functions===-------------------`r`n"
-    $Null = Add-Content -Path "$VersionFolder\$ModuleName.psm1" -Value $FunctionsPrivate, "`r`n"
-    $Null = Get-Content -Path "$ProjectRoot\$ModuleName\$ModuleName.psm1" `
-        | Select-Object -Last 1 `
-        | Add-Content -Path $VersionFolder\$ModuleName.psm1
+    $Null = Copy-Item   -Path "$ProjectRoot\$ModuleName\$ModuleName.psm1" -Destination "$VersionFolder\$ModuleName.psm1" -Force
 
     Write-Host "Module built, verifying module output" -ForegroundColor Blue
     Get-Module -ListAvailable "$VersionFolder\$ModuleName.psd1" `
