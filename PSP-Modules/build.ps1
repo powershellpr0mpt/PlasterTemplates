@@ -1,6 +1,6 @@
 [cmdletbinding()]
 param(
-    [ValidateSet('Default', 'Build', 'Analyze', 'Test', 'WinZip')]
+    [ValidateSet('Default', 'Build', 'Analyze', 'Test', 'WinZip', 'Deploy')]
     $Task = 'Default'
 )
 

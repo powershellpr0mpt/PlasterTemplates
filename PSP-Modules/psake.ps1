@@ -101,3 +101,7 @@ Task WinZip -depends Test {
     $FileName = "$ZipFolder\$ModuleName.$ModuleVersion.zip"
     Compress-Archive -Path $BuildFolder -DestinationPath $FileName -Force
 }
+
+Task Deploy -depends Test {
+    Invoke-PSDeploy  -Path  $ProjectRoot\CurrentUser.PSDeploy.ps1 -Force
+}
