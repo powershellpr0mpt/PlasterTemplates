@@ -25,8 +25,7 @@ Task Build {
     If (-not (Test-Path $BuildFolder)) {
         Write-Host "Creating Build Folder"  -ForegroundColor Blue
         $Null = New-Item -Path $BuildFolder -Type Directory -Force
-    }
-    Else {
+    } Else {
         Write-Host "Clearing Existing Build Folder  $BuildFolder"  -ForegroundColor Blue
         Remove-Item -Path $BuildFolder/* -Recurse -Force
     }
@@ -36,21 +35,19 @@ Task Build {
     If (-not (Test-Path $ZipFolder)) {
         Write-Host "Creating Zip Folder"  -ForegroundColor Blue
         $Null = New-Item -Path $ZipFolder -Type Directory -Force
-    }
-    Else {
+    } Else {
         Write-Host "Clearing Existing Zip Folder  $ZipFolder"  -ForegroundColor Blue
         Remove-Item -Path $ZipFolder/* -Recurse -Force
     }
 
-    Write-Host "Update the PSD1 FunctionsToExport for autoloading"  -ForegroundColor Blue
-    Set-ModuleFunctions
-
     Write-Host "Copying Module Manifest"  -ForegroundColor Blue
-    $Null = Copy-Item   -Path "$ProjectRoot\$ModuleName\$ModuleName.psd1" -Destination "$VersionFolder\$ModuleName.psd1" -Force
-    $Null = Copy-Item   -Path "$ProjectRoot\$ModuleName\$ModuleName.psm1" -Destination "$VersionFolder\$ModuleName.psm1" -Force
+    $Null = Copy-Item   -Path "$ProjectRoot\$ModuleName\" -Recurse -Destination $VersionFolder -Force
+
+    Write-Host "Update the PSD1 FunctionsToExport for autoloading on build folder"  -ForegroundColor Blue
+    Set-ModuleFunctions -Name "$VersionFolder\$ModuleName"
 
     Write-Host "Module built, verifying module output" -ForegroundColor Blue
-    Get-Module -ListAvailable "$VersionFolder\$ModuleName.psd1" `
+    Get-Module -ListAvailable "$VersionFolder\$ModuleName\$ModuleName.psd1" `
         | ForEach-Object -Process {
         $ExportedFunctions = $_ `
             | Select-Object -Property @{ Name = "ExportedFunctions" ; Expression = { [string[]]$_.ExportedFunctions.Keys } } `
@@ -70,11 +67,10 @@ Task Build {
         Write-Output "ExportedAliases   : $ExportedAliases"
         Write-Output "ExportedVariables : $ExportedVariables"
     }
-
 }
 
 Task Analyze -Depends Build {
-    $saResults = Invoke-ScriptAnalyzer -Path $VersionFolder\$ModuleName.psm1 -Severity @('Error') -Recurse -Verbose:$false
+    $saResults = Invoke-ScriptAnalyzer -Path $VersionFolder\$ModuleName\$ModuleName.psm1 -Severity @('Error') -Recurse -Verbose:$false
     if ($saResults) {
         $saResults | Format-Table
         Write-Error -Message 'One or more Script Analyzer errors where found.'
@@ -99,9 +95,13 @@ Task Test -Depends Analyze {
 
 Task WinZip -depends Test {
     $FileName = "$ZipFolder\$ModuleName.$ModuleVersion.zip"
-    Compress-Archive -Path $BuildFolder -DestinationPath $FileName -Force
+    Compress-Archive -Path "$ProjectRoot\$ModuleName" -DestinationPath $FileName -Force
 }
 
-Task Deploy -depends Test {
-    Invoke-PSDeploy  -Path  $ProjectRoot\CurrentUser.PSDeploy.ps1 -Force
+Task DeployDev -depends Test {
+    Invoke-PSDeploy  -Path  $ProjectRoot\MyDeployment.PSDeploy.ps1 -Tag Dev -Force
+}
+
+Task DeployProd -depends Test {
+    Invoke-PSDeploy  -Path  $ProjectRoot\MyDeployment.PSDeploy.ps1 -Tag Prod -Force
 }
