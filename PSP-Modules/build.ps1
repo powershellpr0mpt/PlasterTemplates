@@ -1,6 +1,6 @@
 [cmdletbinding()]
 param(
-    [ValidateSet('Default', 'Build', 'Analyze', 'Test', 'WinZip', 'DeployDev','DeployProd')]
+    [ValidateSet('Default', 'Build', 'Analyze', 'Test', 'WinZip')]
     $Task = 'Default'
 )
 
@@ -8,16 +8,20 @@ Write-Host "Importing Modules:" -ForegroundColor Yellow
 $Modules = @('Psake', 'BuildHelpers', 'Pester', 'PSScriptAnalyzer', 'PSDeploy')
 
 
-ForEach ($Module in $Modules) {
+ForEach ($Module in $Modules)
+{
     Write-Host "...$Module" -ForegroundColor Yellow
-    If (!(Get-Module -Name $Module -ListAvailable)) {
-        try {
+    If (!(Get-Module -Name $Module -ListAvailable))
+    {
+        try
+        {
             $InstallModuleParams = @{
                 Name  = $Module
                 Scope = 'CurrentUser'
                 Force = $true
             }
-            if ($Module -eq 'Pester') {
+            if ($Module -eq 'Pester')
+            {
                 $InstallModuleParams.SkipPublisherCheck = $true
             }
             $null = Find-Module $Module -ErrorAction Stop
@@ -26,12 +30,14 @@ ForEach ($Module in $Modules) {
             Import-Module $Module
             Write-Host "...Complete" -ForegroundColor Green
         }
-        catch {
+        catch
+        {
             Write-Host "...Not Found!" -ForegroundColor Red
             Write-Error -Message $_ -ErrorAction Stop
         }
     }
-    Else {
+    Else
+    {
         Write-Host "...Already Loaded" -ForegroundColor Gray
     }
 }

@@ -22,20 +22,26 @@ Task Build {
     $FunctionsPrivate = Get-ChildItem -Path $ProjectRoot\$ModuleName\Private -Recurse -Exclude *.Tests.* -File `
         | ForEach-Object -Process {Get-Content -Path $_.FullName; "`r`n"}
 
-    If (-not (Test-Path $BuildFolder)) {
+    If (-not (Test-Path $BuildFolder))
+    {
         Write-Host "Creating Build Folder"  -ForegroundColor Blue
         $Null = New-Item -Path $BuildFolder -Type Directory -Force
-    } Else {
+    }
+    Else
+    {
         Write-Host "Clearing Existing Build Folder  $BuildFolder"  -ForegroundColor Blue
         Remove-Item -Path $BuildFolder/* -Recurse -Force
     }
     Write-Host "Creating Version Folder"  -ForegroundColor Blue
     $Null = New-Item -Path $VersionFolder -Type Directory -Force
 
-    If (-not (Test-Path $ZipFolder)) {
+    If (-not (Test-Path $ZipFolder))
+    {
         Write-Host "Creating Zip Folder"  -ForegroundColor Blue
         $Null = New-Item -Path $ZipFolder -Type Directory -Force
-    } Else {
+    }
+    Else
+    {
         Write-Host "Clearing Existing Zip Folder  $ZipFolder"  -ForegroundColor Blue
         Remove-Item -Path $ZipFolder/* -Recurse -Force
     }
@@ -71,14 +77,16 @@ Task Build {
 
 Task Analyze -Depends Build {
     $saResults = Invoke-ScriptAnalyzer -Path $VersionFolder\$ModuleName\$ModuleName.psm1 -Severity @('Error') -Recurse -Verbose:$false
-    if ($saResults) {
+    if ($saResults)
+    {
         $saResults | Format-Table
         Write-Error -Message 'One or more Script Analyzer errors where found.'
     }
 }
 
 Task Test -Depends Analyze {
-    If (-not (Test-Path $TestsOutputFolder)) {
+    If (-not (Test-Path $TestsOutputFolder))
+    {
         Write-Host "Creating Tests Output Folder"  -ForegroundColor Blue
         $Null = New-Item -Path $TestsOutputFolder -Type Directory -Force
     }
@@ -88,7 +96,8 @@ Task Test -Depends Analyze {
 
     Write-Host "Testing Module"  -ForegroundColor Blue
     $HelpResults = Invoke-Pester $TestsFolder -OutputFormat NUnitXml -OutputFile $TestsOutput -PassThru
-    If ($HelpResults.FailedCount -gt 0) {
+    If ($HelpResults.FailedCount -gt 0)
+    {
         Exit $HelpResults.FailedCount
     }
 }
@@ -96,12 +105,4 @@ Task Test -Depends Analyze {
 Task WinZip -depends Test {
     $FileName = "$ZipFolder\$ModuleName.$ModuleVersion.zip"
     Compress-Archive -Path "$ProjectRoot\$ModuleName" -DestinationPath $FileName -Force
-}
-
-Task DeployDev -depends Test {
-    Invoke-PSDeploy  -Path  $ProjectRoot\MyDeployment.PSDeploy.ps1 -Tag Dev -Force
-}
-
-Task DeployProd -depends Test {
-    Invoke-PSDeploy  -Path  $ProjectRoot\MyDeployment.PSDeploy.ps1 -Tag Prod -Force
 }
