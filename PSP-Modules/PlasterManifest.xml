@@ -5,7 +5,7 @@
   <metadata>
     <name>PSP-Modules</name>
     <id>bf150cfc-090d-436b-9016-813ff6b3a2c0</id>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <title>PSP-Modules</title>
     <description>Default PSP Module framework</description>
     <author>Robert Prust</author>
@@ -16,7 +16,7 @@
     <parameter name="ModuleName" type="text" prompt="Name of your module" />
     <parameter name="ModuleDesc" type="text" prompt="Brief description on this module" />
     <parameter name="Version" type="text" prompt="Initial module version" default="0.1.0" />
-    <parameter name="GitHubUserName" type="text" prompt="GitHub username" default="${PLASTER_PARAM_FullName}"/>
+    <parameter name="GitHubUserName" type="text" prompt="GitHub username" default="powershellpr0mpt"/>
     <parameter name="GitHubRepo" type="text" prompt="Github repo name for this module" default="${PLASTER_PARAM_ModuleName}"/>
 </parameters>  <content>
     <message>      Creating folder structure    </message>
@@ -27,7 +27,8 @@
     <file source='.gitignore' destination='' />
     <file source='build.ps1' destination=''/>
     <file source='psake.ps1' destination=''/>
-    <file source='tests\Module.Help.Tests.ps1' destination=''/>
+    <file source='tests\Module.Help.ps1' destination=''/>
+    <file source='tests\External.Help.Tests.ps1' destination=''/>
     <file source='tests\UnitTests.Tests.ps1' destination=''/>
     <message>       Deploying template files    </message>
     <templateFile source='CHANGELOG.md' destination=''/>
