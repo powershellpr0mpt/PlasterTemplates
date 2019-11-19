@@ -13,14 +13,15 @@ Get-Module $ModuleName | Remove-Module
 
 Import-Module $ModulePath -Force
 
-Describe 'Module Manifest Test' {
-    It 'Passes Test-ModuleManifest' {
-        Test-ModuleManifest -Path $ModulePath | Should Be $true
-    }
-}
-
-Describe 'Module Imported Test' {
-    It 'Confirms Module Is Loaded' {
-        (Get-Module $ModuleName) -eq $null | Should Be $false
+Describe -Name 'Check external help' {
+    $cmds = Get-Command -Module $ModuleName
+    foreach ($cmdlet in $cmds){
+        $help = Get-Help $cmdlet
+        It "$cmdlet has external help defined" {
+            $help.Description | Should -Not -BeNullOrEmpty
+        }
+        It "$cmdlet has at least one example defined" {
+            $help.Examples | Should -Not -BeNullOrEmpty
+        }
     }
 }
