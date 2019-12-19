@@ -23,6 +23,7 @@
     <file source='' destination='tests'/>
     <file source='' destination='${PLASTER_PARAM_ModuleName}\public'/>
     <file source='' destination='${PLASTER_PARAM_ModuleName}\private'/>
+    <file source='' destination='${PLASTER_PARAM_ModuleName}\formats'/>
     <message>      Deploying common files    </message>
     <file source='.gitignore' destination='' />
     <file source='build.ps1' destination=''/>
